@@ -5,8 +5,21 @@ from itertools import islice
 import csv
 
 
-def verificar_dtype(dicionario:dict) -> str:
-    print(dicionario)
+def is_bool(valor: list[str]) -> list[str]:
+    if not valor:
+        return None
+    
+    if all(str(v) in ("true", "false") for v in valor):
+        return "BOOLEAN"
+
+
+def is_int():
+    pass
+
+    
+def verificar_dtype(valor: list[str]) -> str:
+    #print(f"Verificando os valores: {valor}")
+    return is_bool(valor)
 
 
 def create_schema() -> Path:
@@ -29,4 +42,9 @@ def create_schema() -> Path:
                     else:
                         dict_schema[chave].append(valor.strip().lower())
 
-            verificar_dtype(dict_schema)  
+            verificar_dtype(dict_schema) # Dicionário que irá armazena colunas(key) e valores(values) de todos os csv`s
+
+            for coluna, valor in dict_schema.items(): 
+                tipo = verificar_dtype(valor)
+
+                print(coluna, tipo)
