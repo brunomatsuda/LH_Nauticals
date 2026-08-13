@@ -24,16 +24,26 @@ def is_int(valor: list[str]) -> list[str] | None:
     return True
 
 
-def is_decimal(valor: list[str]) -> list[str] | None:
+def is_float(valor: list[str]) -> list[str] | None:
     if not valor:
         return None
 
+    for v in valor:
+        try:
+            float(v)
+        except ValueError:
+            return False
+        
+    return True
 
+    
 def verificar_dtype(valor: list[str]) -> str:
     if is_bool(valor):
         return "BOOLEAN"
     if is_int(valor):
         return "INTEGER"
+    if is_float(valor):
+        return "Double Precision"
     return None
     
 
