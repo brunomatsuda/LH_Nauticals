@@ -5,19 +5,29 @@ from itertools import islice
 import csv
 
 
-def is_bool(valor: list[str]) -> str | None:
+def is_bool(valor: list[str]) -> list[str] | None:
     if not valor:
         return None
     
     return all(str(v) in ("true", "false") for v in valor)
         
 
-def is_int(valor: list[str]) -> str | None:
+def is_int(valor: list[str]) -> list[str] | None:
     if not valor:
         return None
 
-    return all(v.isdigit() for v in valor)
-        
+    for v in valor:
+        if not v.isdigit():
+            return False
+        if len(v) > 9: # Para evitar leitura de colunas telefônicas
+            return False
+    return True
+
+
+def is_decimal(valor: list[str]) -> list[str] | None:
+    if not valor:
+        return None
+
 
 def verificar_dtype(valor: list[str]) -> str:
     if is_bool(valor):
@@ -40,7 +50,7 @@ def create_schema() -> Path:
             leitor = csv.DictReader(f)
             dict_schema = {} # Dicionário que irá armazena colunas(key) e valores(values) de todos os csv`s
 
-            for linha in islice(leitor, 2):
+            for linha in islice(leitor, 5):
                 for chave, valor in linha.items():
                     if chave not in dict_schema:
                         dict_schema[chave] = [valor.strip().lower()]
