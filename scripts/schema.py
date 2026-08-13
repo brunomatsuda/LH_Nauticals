@@ -5,22 +5,27 @@ from itertools import islice
 import csv
 
 
-def is_bool(valor: list[str]) -> list[str]:
+def is_bool(valor: list[str]) -> str | None:
     if not valor:
         return None
     
-    if all(str(v) in ("true", "false") for v in valor):
-        return "BOOLEAN"
+    return all(str(v) in ("true", "false") for v in valor)
+        
 
+def is_int(valor: list[str]) -> str | None:
+    if not valor:
+        return None
 
-def is_int():
-    pass
+    return all(v.isdigit() for v in valor)
+        
 
-    
 def verificar_dtype(valor: list[str]) -> str:
-    #print(f"Verificando os valores: {valor}")
-    return is_bool(valor)
-
+    if is_bool(valor):
+        return "BOOLEAN"
+    if is_int(valor):
+        return "INTEGER"
+    return None
+    
 
 def create_schema() -> Path:
     arquivos = list(Path(RAW_PATH).glob("*.csv"))
@@ -33,7 +38,7 @@ def create_schema() -> Path:
 
         with open(caminho, newline="", encoding='utf-8') as f:
             leitor = csv.DictReader(f)
-            dict_schema = {}
+            dict_schema = {} # Dicionário que irá armazena colunas(key) e valores(values) de todos os csv`s
 
             for linha in islice(leitor, 2):
                 for chave, valor in linha.items():
@@ -42,7 +47,6 @@ def create_schema() -> Path:
                     else:
                         dict_schema[chave].append(valor.strip().lower())
 
-            verificar_dtype(dict_schema) # Dicionário que irá armazena colunas(key) e valores(values) de todos os csv`s
 
             for coluna, valor in dict_schema.items(): 
                 tipo = verificar_dtype(valor)
