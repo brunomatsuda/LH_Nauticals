@@ -36,6 +36,25 @@ def is_float(valor: list[str]) -> list[str] | None:
         
     return True
 
+
+def is_date(valor: list[str]) -> list[str] | None:
+    if not valor:
+        return None
+
+    formatos_date = (
+        "%Y-%m-%d", "%d/%m/%Y",
+        "%d-%m-%Y", "%Y/%m/%d",
+        "%d.%m.%Y","%Y.%m.%d",
+    )
+    for v in valor:
+        for dt_formato in formatos_date:
+            try:
+                datetime.strptime(v, dt_formato)
+                return True
+            except ValueError:
+                pass
+    return False
+
     
 def verificar_dtype(valor: list[str]) -> str:
     if is_bool(valor):
@@ -43,7 +62,9 @@ def verificar_dtype(valor: list[str]) -> str:
     if is_int(valor):
         return "INTEGER"
     if is_float(valor):
-        return "Double Precision"
+        return "DOUBLE PRECISION"
+    if is_date(valor):
+        return "DATE"
     return None
     
 
