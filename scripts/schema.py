@@ -5,6 +5,27 @@ from itertools import islice
 import csv
 
 
+def is_special(valor: list[str], coluna: list[str]) -> bool | None: # captura valores 'extraodinários' como telefone, cpf.....
+    if not valor:
+        return None
+    
+    special = {
+        "cpf",
+        "cnpj",
+        "telefone",
+        "celular",
+        "cep",
+        "sku",
+        "codigo_barras",
+        "ean",
+        "matricula",
+        "phone",
+        "state_registration"
+    }
+    if coluna in special:
+        return True
+
+
 def is_bool(valor: list[str]) -> bool | None:
     if not valor:
         return None
@@ -79,7 +100,9 @@ def is_text(valor: list[str]) -> bool | None:
     return True
 
     
-def verificar_dtype(valor: list[str]) -> str:
+def verificar_dtype(valor: list[str], coluna:list[str]) -> str:
+    if is_special(valor, coluna):
+        return "TEXT"
     if is_bool(valor):
         return "BOOLEAN"
     if is_int(valor):
@@ -111,15 +134,17 @@ def create_schema() -> Path:
 
             for linha in islice(leitor, 2):
                 for chave, valor in linha.items():
+                    chave = chave.strip().lower()
+                    valor = valor.strip().lower()
                     if not valor:
                         continue
 
                     if chave not in dict_schema:
-                        dict_schema[chave] = [valor.strip().lower()]
+                        dict_schema[chave] = [valor]
                     else:
-                        dict_schema[chave].append(valor.strip().lower())
+                        dict_schema[chave].append(valor)
 
             for coluna, valor in dict_schema.items(): 
-                tipo = verificar_dtype(valor)
+                tipo = verificar_dtype(valor, coluna)
 
                 print(coluna, tipo)
