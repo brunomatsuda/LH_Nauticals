@@ -19,8 +19,6 @@ def is_int(valor: list[str]) -> bool | None:
     for v in valor:
         if not v.isdigit():
             return False
-        if len(v) > 9: # Para evitar leitura de colunas telefônicas
-            return False
     return True
 
 
@@ -74,9 +72,14 @@ def is_date(valor: list[str]) -> bool | None:
 
     return None
 
+
+def is_text(valor: list[str]) -> bool | None:
+    if not valor:
+        return None
+    return True
+
     
 def verificar_dtype(valor: list[str]) -> str:
-    date_return=""
     if is_bool(valor):
         return "BOOLEAN"
     if is_int(valor):
@@ -87,6 +90,9 @@ def verificar_dtype(valor: list[str]) -> str:
     tipo_data = is_date(valor)
     if tipo_data:
         return tipo_data
+
+    if is_text(valor):
+        return "TEXT"
     return None
     
 
@@ -103,13 +109,15 @@ def create_schema() -> Path:
             leitor = csv.DictReader(f)
             dict_schema = {} # Dicionário que irá armazena colunas(key) e valores(values) de todos os csv`s
 
-            for linha in islice(leitor, 5):
+            for linha in islice(leitor, 2):
                 for chave, valor in linha.items():
+                    if not valor:
+                        continue
+
                     if chave not in dict_schema:
                         dict_schema[chave] = [valor.strip().lower()]
                     else:
                         dict_schema[chave].append(valor.strip().lower())
-
 
             for coluna, valor in dict_schema.items(): 
                 tipo = verificar_dtype(valor)
