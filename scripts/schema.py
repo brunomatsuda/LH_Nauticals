@@ -20,7 +20,10 @@ def is_special(valor: list[str], coluna: list[str]) -> bool | None: # captura va
         "ean",
         "matricula",
         "phone",
-        "state_registration"
+        "state_registration",
+        "tax_id",
+        "nfe_access_key",
+        "barcode_ean"
     }
     if coluna in special:
         return True
@@ -40,7 +43,11 @@ def is_int(valor: list[str]) -> bool | None:
     for v in valor:
         if not v.isdigit():
             return False
-    return True
+        
+    if len(valor) <10:
+        return True
+    else:
+        return False
 
 
 def is_float(valor: list[str]) -> bool | None:
@@ -89,7 +96,7 @@ def is_date(valor: list[str]) -> bool | None:
         return "DATE"
 
     if all(any(_try_parse_date(str(v).strip(), fmt) for fmt in formatos_datetime) for v in valor):
-        return "DATETIME"
+        return "TIMESTAMP"
 
     return None
 
@@ -123,7 +130,7 @@ def nome_tabela(arquivo: str) -> str:
     return Path(arquivo).stem.strip().lower().replace(" ", "_").replace("-", "_")
 
 
-def create_schema(output_file: Path | str = None, sample_size: int = 2) -> Path:
+def create_schema(output_file: Path | str = None, sample_size: int = 10) -> Path:
     arquivos = list(Path(RAW_PATH).glob("*.csv"))
  
     if output_file is None:
@@ -150,7 +157,7 @@ def create_schema(output_file: Path | str = None, sample_size: int = 2) -> Path:
                         chave = chave.strip().lower()
                         valor = valor.strip().lower() if valor else valor
                         if not valor:
-                            continue
+                            dict_schema[chave] = [valor]
  
                         if chave not in dict_schema:
                             dict_schema[chave] = [valor]
