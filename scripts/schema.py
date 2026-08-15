@@ -44,7 +44,7 @@ def is_int(valor: list[str]) -> bool | None:
         if not v.isdigit():
             return False
         
-    if len(valor) <10:
+    if len(valor) <=10:
         return True
     else:
         return False

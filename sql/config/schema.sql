@@ -4,15 +4,15 @@ CREATE TABLE IF NOT EXISTS orders (
     "order_number" TEXT,
     "channel" TEXT,
     "customer_id" INTEGER,
+    "salesperson_id" TEXT,
     "location_id" INTEGER,
     "status" TEXT,
     "subtotal" DOUBLE PRECISION,
     "discount_amount" DOUBLE PRECISION,
     "total" DOUBLE PRECISION,
-    "placed_at" DATETIME,
-    "created_at" DATETIME,
-    "updated_at" DATETIME,
-    "salesperson_id" INTEGER
+    "placed_at" TIMESTAMP,
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo variant_attribute_values.csv
@@ -33,10 +33,10 @@ CREATE TABLE IF NOT EXISTS purchase_orders (
     "currency" TEXT,
     "subtotal" DOUBLE PRECISION,
     "total" DOUBLE PRECISION,
-    "placed_at" DATETIME,
-    "expected_delivery_at" DATE,
-    "created_at" DATETIME,
-    "updated_at" DATETIME
+    "placed_at" TIMESTAMP,
+    "expected_delivery_at" TEXT,
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo suppliers.csv
@@ -45,14 +45,14 @@ CREATE TABLE IF NOT EXISTS suppliers (
     "legal_name" TEXT,
     "trade_name" TEXT,
     "country" TEXT,
-    "tax_id" INTEGER,
+    "tax_id" TEXT,
     "tax_id_type" TEXT,
     "email" TEXT,
     "phone" TEXT,
     "contact_name" TEXT,
     "is_active" BOOLEAN,
-    "created_at" DATETIME,
-    "updated_at" DATETIME
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo returns.csv
@@ -65,8 +65,8 @@ CREATE TABLE IF NOT EXISTS returns (
     "status" TEXT,
     "reason" TEXT,
     "total_refund_amount" DOUBLE PRECISION,
-    "created_at" DATETIME,
-    "updated_at" DATETIME
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo stock_movements.csv
@@ -76,9 +76,12 @@ CREATE TABLE IF NOT EXISTS stock_movements (
     "location_id" INTEGER,
     "movement_type" TEXT,
     "quantity" DOUBLE PRECISION,
+    "reference_table" TEXT,
+    "reference_id" TEXT,
+    "employee_id" TEXT,
     "notes" TEXT,
-    "occurred_at" DATETIME,
-    "created_at" DATETIME
+    "occurred_at" TIMESTAMP,
+    "created_at" TIMESTAMP
 );
 
 -- Lendo o arquivo customers.csv
@@ -87,13 +90,13 @@ CREATE TABLE IF NOT EXISTS customers (
     "person_type" TEXT,
     "legal_name" TEXT,
     "trade_name" TEXT,
-    "tax_id" INTEGER,
+    "tax_id" TEXT,
     "state_registration" TEXT,
     "email" TEXT,
     "phone" TEXT,
     "is_active" BOOLEAN,
-    "created_at" DATETIME,
-    "updated_at" DATETIME
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo employees.csv
@@ -105,9 +108,10 @@ CREATE TABLE IF NOT EXISTS employees (
     "role" TEXT,
     "primary_location_id" INTEGER,
     "hire_date" DATE,
+    "termination_date" TEXT,
     "is_active" BOOLEAN,
-    "created_at" DATETIME,
-    "updated_at" DATETIME
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo categories.csv
@@ -115,9 +119,10 @@ CREATE TABLE IF NOT EXISTS categories (
     "id" INTEGER,
     "name" TEXT,
     "slug" TEXT,
+    "parent_category_id" TEXT,
     "is_active" BOOLEAN,
-    "created_at" DATETIME,
-    "updated_at" DATETIME
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo stock_levels.csv
@@ -125,7 +130,8 @@ CREATE TABLE IF NOT EXISTS stock_levels (
     "product_variant_id" INTEGER,
     "location_id" INTEGER,
     "quantity_on_hand" DOUBLE PRECISION,
-    "updated_at" DATETIME
+    "reorder_point" TEXT,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo products.csv
@@ -138,8 +144,8 @@ CREATE TABLE IF NOT EXISTS products (
     "ncm_code" INTEGER,
     "unit_of_measure" TEXT,
     "is_active" BOOLEAN,
-    "created_at" DATETIME,
-    "updated_at" DATETIME
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo purchase_order_items.csv
@@ -181,8 +187,8 @@ CREATE TABLE IF NOT EXISTS locations (
     "state" TEXT,
     "country" TEXT,
     "is_active" BOOLEAN,
-    "created_at" DATETIME,
-    "updated_at" DATETIME
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo fiscal_invoices.csv
@@ -190,14 +196,14 @@ CREATE TABLE IF NOT EXISTS fiscal_invoices (
     "id" INTEGER,
     "order_id" INTEGER,
     "nfe_number" TEXT,
-    "nfe_access_key" INTEGER,
+    "nfe_access_key" TEXT,
     "series" INTEGER,
-    "issued_at" DATETIME,
+    "issued_at" TIMESTAMP,
     "status" TEXT,
     "total_amount" DOUBLE PRECISION,
     "xml_storage_uri" TEXT,
-    "created_at" DATETIME,
-    "updated_at" DATETIME
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo payments.csv
@@ -208,9 +214,9 @@ CREATE TABLE IF NOT EXISTS payments (
     "installments" INTEGER,
     "amount" DOUBLE PRECISION,
     "status" TEXT,
-    "paid_at" DATETIME,
-    "created_at" DATETIME,
-    "updated_at" DATETIME
+    "paid_at" TEXT,
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo goods_receipts.csv
@@ -218,8 +224,9 @@ CREATE TABLE IF NOT EXISTS goods_receipts (
     "id" INTEGER,
     "purchase_order_id" INTEGER,
     "received_by_employee_id" INTEGER,
-    "received_at" DATETIME,
-    "created_at" DATETIME
+    "received_at" TIMESTAMP,
+    "notes" TEXT,
+    "created_at" TIMESTAMP
 );
 
 -- Lendo o arquivo return_items.csv
@@ -229,6 +236,7 @@ CREATE TABLE IF NOT EXISTS return_items (
     "order_item_id" INTEGER,
     "quantity" DOUBLE PRECISION,
     "action" TEXT,
+    "exchange_variant_id" TEXT,
     "unit_refund_amount" DOUBLE PRECISION
 );
 
@@ -240,8 +248,8 @@ CREATE TABLE IF NOT EXISTS product_suppliers (
     "last_quoted_cost" DOUBLE PRECISION,
     "lead_time_days" INTEGER,
     "is_preferred" BOOLEAN,
-    "created_at" DATETIME,
-    "updated_at" DATETIME
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo product_variants.csv
@@ -249,25 +257,25 @@ CREATE TABLE IF NOT EXISTS product_variants (
     "id" INTEGER,
     "product_id" INTEGER,
     "sku" TEXT,
-    "barcode_ean" INTEGER,
+    "barcode_ean" TEXT,
     "sale_price" DOUBLE PRECISION,
     "cost_price" DOUBLE PRECISION,
     "weight_kg" DOUBLE PRECISION,
     "icms_rate" DOUBLE PRECISION,
     "ipi_rate" DOUBLE PRECISION,
     "is_active" BOOLEAN,
-    "created_at" DATETIME,
-    "updated_at" DATETIME
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo brands.csv
 CREATE TABLE IF NOT EXISTS brands (
     "id" INTEGER,
     "name" TEXT,
+    "country" TEXT,
     "is_active" BOOLEAN,
-    "created_at" DATETIME,
-    "updated_at" DATETIME,
-    "country" TEXT
+    "created_at" TIMESTAMP,
+    "updated_at" TIMESTAMP
 );
 
 -- Lendo o arquivo addresses.csv
@@ -278,6 +286,7 @@ CREATE TABLE IF NOT EXISTS addresses (
     "postal_code" TEXT,
     "street" TEXT,
     "number" INTEGER,
+    "complement" TEXT,
     "district" TEXT,
     "city" TEXT,
     "state" TEXT,
