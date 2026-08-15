@@ -43,9 +43,9 @@ def criar_banco():
             print(f"Banco '{DB_NAME}' criado.")
         else:
             print(f"Banco '{DB_NAME}' já existe, seguindo em frente.")
+            exit
 
     conn.close()
-
 
 # ---------------------------------------------------------------------
 # exe schema.sql
@@ -53,18 +53,55 @@ def criar_banco():
 def criar_tabelas(conn):
     with open(SCHEMA_PATH, "r", encoding="utf-8") as arquivo:
         schema = arquivo.read()
-
+ 
     with conn.cursor() as cursor:
         cursor.execute(schema)
-
+ 
     conn.commit()
     print("Schema executado (tabelas criadas).")
+
+
+# ---------------------------------------------------------------------
+# verificação de colunas já existentes
+# ---------------------------------------------------------------------
+def tabela_tem_dados(conn, tabela: str) -> bool:
+    with conn.cursor() as cursor:
+        cursor.execute(f'SELECT EXISTS (SELECT 1 FROM "{tabela}" LIMIT 1)')
+        (existe,) = cursor.fetchone()
+    return existe
+ 
+ 
+def carregar_csv(conn, tabela: str, caminho_csv: Path):
+    if tabela_tem_dados(conn, tabela):
+        print(f"  Tabela '{tabela}' já possui dados")
+        return
+ 
+    with open(caminho_csv, "r", encoding="utf-8") as arquivo:
+        leitor = csv.reader(arquivo)
+        header = next(leitor)
+ 
+    colunas = ", ".join(f'"{col.strip()}"' for col in header)
+    copy_sql = f'COPY "{tabela}" ({colunas}) FROM STDIN WITH CSV HEADER'
+ 
+    with conn.cursor() as cursor:
+        with open(caminho_csv, "r", encoding="utf-8") as arquivo:
+            with cursor.copy(copy_sql) as copy:
+                while dados := arquivo.read(8192):
+                    copy.write(dados)
+ 
+    conn.commit()
+    print("  OK.")
+
 
 
 # ---------------------------------------------------------------------
 # Mapeamento de colunas
 # ---------------------------------------------------------------------
 def carregar_csv(conn, tabela: str, caminho_csv: Path):
+    if tabela_tem_dados(conn, tabela):
+        print(f"  Tabela '{tabela}' já possui dados, pulando (evita duplicação).")
+        return
+
     with open(caminho_csv, "r", encoding="utf-8") as arquivo:
         leitor = csv.reader(arquivo)
         header = next(leitor)
